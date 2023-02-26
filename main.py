@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import customtkinter
+import face_recognition
 
 
 class MyGUI:
@@ -24,9 +25,9 @@ class MyGUI:
         # Create buttons for each option
         button_style = ttk.Style()
         button_style.configure("My.TButton", foreground="black", background="#1c4e80", font=("Helvetica", 12), padding=10)
-        self.button1 = ttk.Button(master, text="Option 1", style="My.TButton", command=self.option1)
+        self.button1 = ttk.Button(master, text="Recognice user", style="My.TButton", command=self.option1)
         self.button1.pack(pady=5)
-        self.button2 = ttk.Button(master, text="Option 2", style="My.TButton", command=self.option2)
+        self.button2 = ttk.Button(master, text="Train person model", style="My.TButton", command=self.option2)
         self.button2.pack(pady=5)
         self.button3 = ttk.Button(master, text="Option 3", style="My.TButton", command=self.option3)
         self.button3.pack(pady=5)
@@ -36,12 +37,10 @@ class MyGUI:
         self.exit_button.pack(pady=10)
     
     def option1(self):
-        print("Option 1 selected")
-        # do something related to option 1
+        face_recognition.recognize_faces()
     
     def option2(self):
-        print("Option 2 selected")
-        # do something related to option 2
+         face_recognition.capture_images()
     
     def option3(self):
         print("Option 3 selected")
