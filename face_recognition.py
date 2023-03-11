@@ -16,7 +16,7 @@ def read_images(directory, size=(200, 200)):
             try:
                 if file.endswith("jpg") or file.endswith("png"):
                     path = os.path.join(root, file)
-                    label = os.path.basename(path).split(" ")[0]
+                    label = os.path.basename(path).split("_")[0]
                     if label not in label_dict:
                         label_dict[label] = label_counter
                         label_counter += 1
@@ -31,10 +31,8 @@ def read_images(directory, size=(200, 200)):
 
 
 def capture_images(count=20, size=(200, 200)):
-    
-    label = input("Enter the name of the new person: ")
-   
 
+    label = input("Enter the name of the new person: ")
 
     cap = cv2.VideoCapture(0)  # initialize video capture from camera
     face_cascade = cv2.CascadeClassifier(
@@ -88,6 +86,7 @@ def capture_images(count=20, size=(200, 200)):
     cap.release()
     cv2.destroyAllWindows()
 
+
 def recognize_faces():
     try:
 
@@ -97,7 +96,6 @@ def recognize_faces():
         # Train face recognizer
         base_pictures, labels, label_dict = read_images(
             "base_pictures", size=(200, 200))
-
         face_recognizer = cv2.face.EigenFaceRecognizer_create()
         face_recognizer.train(base_pictures, np.array(labels, dtype=np.int32))
 
@@ -124,34 +122,33 @@ def recognize_faces():
 
                 # Crop face from the frame
                 face = gray[y:y+h, x:x+w]
-
+                print(face)
                 # Resize face for recognition (should be same size as training images)
                 face = cv2.resize(face, (200, 200))
 
                 # Recognize face using face recognizer
                 label, confidence = face_recognizer.predict(face)
 
-                print(label)
                 # Get the name from the label_dict dictionary, or indicate that the person is not recognized
-                if label in label_dict:
-                    name = label_dict[label]
+                
+                name = get_key(label,label_dict)
+
+                if name != "Person not recognized":
                     text = "{} ({:.2f}%) {}".format(label, confidence, name)
                     color = known_person_color
                 else:
-                    name = "Person not recognized"
-                    text = name
+                    text = "Person not recognized"
                     color = unknown_person_color
                 # Get the name from the label_dict dictionary
                 name = list(label_dict.keys())[
                     list(label_dict.values()).index(label)]
 
                 # Draw label and confidence on the frame with the name
-                cv2.putText(frame, text, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
+                cv2.putText(frame, text, (x, y-10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
 
                 # Draw rectangle around the face
                 cv2.rectangle(frame, (x, y), (x+w, y+h), color, 2)
-
-             
 
             # Display the resulting frame
             cv2.imshow('frame', frame)
@@ -165,3 +162,10 @@ def recognize_faces():
         cv2.destroyAllWindows()
     except Exception as e:
         print(f"Error: {e}")
+
+def get_key(val,label_dict):
+    for key, value in label_dict.items():
+        if val == value:
+            return key
+ 
+    return "Person not recognized"
